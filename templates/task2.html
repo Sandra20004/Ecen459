@@ -10,31 +10,37 @@
 
     <div>
         <img src="{{ url_for('static', filename='images/Transmissionline.png') }}" alt="Transmission Line Diagram" style="width: 500px; height: auto;">
-    </div>
+    </div><br><br>
 
     <form action="/calculate" method="post"> 
         <label for="frequency">Frequency (Hz): </label>
-        <input type="number" id="frequency" name="frequency" step="any" placeholder="e.g. 50 or 60" required><br><br>
+        <select id="frequency" name="frequency" required>
+            <option value="50">50</option>
+            <option value="60">60</option>
+        </select><br><br>
 
         <label for="CDiameter">Conductor Diameter (m): </label>
-        <input type="number" id="CDiameter" name="CDiameter" step="any" placeholder="e.g. 0.03" required><br><br>
+        <input type="number" id="CDiameter" name="CDiameter" step="any" value="{{ request.form.CDiameter or '' }}" placeholder="e.g. 0.03" required><br><br>
 
         <label for="CResistance">Conductor Resistance (Ω/m): </label>
-        <input type="number" id="CResistance" name="CResistance" step="any" placeholder="e.g. 0.03" required><br><br>
+        <input type="number" id="CResistance" name="CResistance" step="any" value="{{ request.form.CResistance or '' }}" placeholder="e.g. 0.03" required><br><br>
 
         <label for="BNumbers">Number of Conductors in Bundle: </label>
-        <input type="number" id="BNumbers" name="BNumbers" step="1" placeholder="e.g. 1" required><br><br>
+        <input type="number" id="BNumbers" name="BNumbers" step="1" value="{{ request.form.BNumbers or '' }}" placeholder="e.g. 1" required><br><br>
 
-        <label for="PSpacing">Phase Spacing (m): </label>
-        <input type="number" id="PSpacing" name="PSpacing" step="any" placeholder="e.g. 0.5" required><br><br>
+        <label for="Bspacing">Spacing between Conductors in Bundle (m): </label>
+        <input type="number" id="Bspacing" name="Bspacing" step="any" value="{{ request.form.Bspacing or '' }}" placeholder="e.g. 0.001" required><br><br>
 
-        <label for="CGMR">Conductor GMR (optional, m): </label>
-        <input type="number" id="CGMR" name="CGMR" step="any" placeholder="Optional GMR"><br><br>
+        <label for="linelength">Line Length (m): </label>
+        <input type="number" id="linelength" name="linelength" step="any" value="{{ request.form.linelength or '' }}" placeholder="e.g. 10.00" required><br><br>
+
+        <label for="CGMR">Conductor GMR (m): </label>
+        <input type="number" id="CGMR" name="CGMR" step="any" value="{{ request.form.CGMR or '' }}" placeholder="GMR"><br><br>
 
         <!-- Line Length: visible only if not transposed -->
         <div id="line_length_field">
-            <label for="linelength">Line Length (m): </label>
-            <input type="number" id="linelength" name="linelength" step="any" placeholder="e.g. 10" required><br><br>
+           <label for="PSpacing">Phase Spacing (m): </label>
+           <input type="number" id="PSpacing" name="PSpacing" step="any" value="{{ request.form.PSpacing or '' }}" placeholder="e.g. 0.5"><br><br> 
         </div>
 
         <!-- Checkbox to indicate if the line is transposed -->
@@ -44,13 +50,13 @@
         <!-- Fields to input distances for transposed lines (only if the line is transposed) -->
         <div id="transposed_fields" style="display: none;">
             <label for="d12">Distance dAB (m): </label>
-            <input type="number" id="d12" name="d12" step="any" placeholder="e.g. 10"><br><br>
+            <input type="number" id="d12" name="d12" step="any" value="{{ request.form.d12 or '' }}" placeholder="e.g. 10"><br><br>
 
             <label for="d13">Distance dBC (m): </label>
-            <input type="number" id="d13" name="d13" step="any" placeholder="e.g. 10"><br><br>
+            <input type="number" id="d13" name="d13" step="any" value="{{ request.form.d13 or '' }}" placeholder="e.g. 10"><br><br>
 
             <label for="d23">Distance dAC (m): </label>
-            <input type="number" id="d23" name="d23" step="any" placeholder="e.g. 10"><br><br>
+            <input type="number" id="d23" name="d23" step="any" value="{{ request.form.d23 or '' }}" placeholder="e.g. 10"><br><br>
         </div>
 
         <input type="submit" value="Calculate">
@@ -60,9 +66,10 @@
     {% if resultR or resultL or resultC or resultXL or resultXC %}
     <div class="results">
         <h2>Results:</h2>
-        <p>Resistance (R): {{ resultR }} Ω/m</p>
-        <p>Inductive Reactance (X_L): {{ resultXL }} Ω/m</p>
-        <p>Capacitive Reactance (X_C): {{ resultXC }} Ω/m</p>
+        <p>Resistance (R): {{ resultR }} Ω</p>
+        <p>Inductive Reactance (X_L): {{ resultXL }} Ω</p>
+        <p>Capacitive Reactance (X_C): {{ resultXC }} Ω</p>
+
     </div>
     {% elif error %}
     <p class="error">{{ error }}</p>
