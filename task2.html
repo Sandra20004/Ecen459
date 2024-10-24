@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transmission Line Calculator</title>
+</head>
+<body>
+    <h1>Transmission Line Calculator</h1>
+
+    <div>
+        <img src="{{ url_for('static', filename='images/Transmissionline.png') }}" alt="Transmission Line Diagram" style="width: 500px; height: auto;">
+    </div><br><br>
+
+    <form action="/calculate" method="post"> 
+        <label for="frequency">Frequency (Hz): </label>
+        <select id="frequency" name="frequency" required>
+            <option value="50">50</option>
+            <option value="60">60</option>
+        </select><br><br>
+
+        <label for="CDiameter">Conductor Diameter (m): </label>
+        <input type="number" id="CDiameter" name="CDiameter" step="any" value="{{ request.form.CDiameter or '' }}" placeholder="e.g. 0.03" required><br><br>
+
+        <label for="CResistance">Conductor Resistance (Ω/m): </label>
+        <input type="number" id="CResistance" name="CResistance" step="any" value="{{ request.form.CResistance or '' }}" placeholder="e.g. 0.03" required><br><br>
+
+        <label for="BNumbers">Number of Conductors in Bundle: </label>
+        <input type="number" id="BNumbers" name="BNumbers" step="1" value="{{ request.form.BNumbers or '' }}" placeholder="e.g. 1" required><br><br>
+
+        <label for="Bspacing">Spacing between Conductors in Bundle (m): </label>
+        <input type="number" id="Bspacing" name="Bspacing" step="any" value="{{ request.form.Bspacing or '' }}" placeholder="e.g. 0.001" required><br><br>
+
+        <label for="linelength">Line Length (m): </label>
+        <input type="number" id="linelength" name="linelength" step="any" value="{{ request.form.linelength or '' }}" placeholder="e.g. 10.00" required><br><br>
+
+        <label for="CGMR">Conductor GMR (m): </label>
+        <input type="number" id="CGMR" name="CGMR" step="any" value="{{ request.form.CGMR or '' }}" placeholder="GMR"><br><br>
+
+        <!-- Line Length: visible only if not transposed -->
+        <div id="line_length_field">
+           <label for="PSpacing">Phase Spacing (m): </label>
+           <input type="number" id="PSpacing" name="PSpacing" step="any" value="{{ request.form.PSpacing or '' }}" placeholder="e.g. 0.5"><br><br> 
+        </div>
+
+        <!-- Checkbox to indicate if the line is transposed -->
+        <label for="is_transposed">Is the line transposed? </label>
+        <input type="checkbox" id="is_transposed" name="is_transposed"><br><br>
+
+        <!-- Fields to input distances for transposed lines (only if the line is transposed) -->
+        <div id="transposed_fields" style="display: none;">
+            <label for="d12">Distance dAB (m): </label>
+            <input type="number" id="d12" name="d12" step="any" value="{{ request.form.d12 or '' }}" placeholder="e.g. 10"><br><br>
+
+            <label for="d13">Distance dBC (m): </label>
+            <input type="number" id="d13" name="d13" step="any" value="{{ request.form.d13 or '' }}" placeholder="e.g. 10"><br><br>
+
+            <label for="d23">Distance dAC (m): </label>
+            <input type="number" id="d23" name="d23" step="any" value="{{ request.form.d23 or '' }}" placeholder="e.g. 10"><br><br>
+        </div>
+
+        <input type="submit" value="Calculate">
+    </form>
+
+    <!-- Display results here -->
+    {% if resultR or resultL or resultC or resultXL or resultXC %}
+    <div class="results">
+        <h2>Results:</h2>
+        <p>Resistance (R): {{ resultR }} Ω</p>
+        <p>Inductive Reactance (X_L): {{ resultXL }} Ω</p>
+        <p>Capacitive Reactance (X_C): {{ resultXC }} Ω</p>
+
+    </div>
+    {% elif error %}
+    <p class="error">{{ error }}</p>
+    {% endif %}
+
+    <script>
+        // JavaScript to show/hide transposed line input fields and line length
+        document.getElementById("is_transposed").addEventListener("change", function() {
+            var transposedFields = document.getElementById("transposed_fields");
+            var lineLengthField = document.getElementById("line_length_field");
+            if (this.checked) {
+                transposedFields.style.display = "block";
+                lineLengthField.style.display = "none";  // Hide line length when transposed
+            } else {
+                transposedFields.style.display = "none";
+                lineLengthField.style.display = "block";  // Show line length when not transposed
+            }
+        });
+    </script>
+</body>
+</html>
